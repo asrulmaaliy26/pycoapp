@@ -1,0 +1,56 @@
+# General
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+*.zip
+*.sql
+
+# PHP
+/vendor/
+/node_modules/
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# psychoApps data folders
+/psychoApps/file_bukti_pembayaran_ukt/
+/psychoApps/file_proposal/
+/psychoApps/file_proposal_magang/
+/psychoApps/file_proposal_pengajuan_dospem/
+/psychoApps/file_skripsi_ujian/
+/psychoApps/file_surat_kirim/
+/psychoApps/file_tashih_pengajuan_dospem/
+/psychoApps/file_toefl_toafl_pengajuan_dospem/
+/psychoApps/file_transkrip_pengajuan_dospem/
+/psychoApps/file_transkrip_pkl/
+/psychoApps/image_barang/
+/psychoApps/photo_mhssw/
+/psychoApps/photo_pegawai/
+/psychoApps/surat_keluar/
+/psychoApps/surat_masuk/
+/psychoApps/transkrip_kompre/
+
+# simagis data folders
+/simagis/file_audien_sempro/
+/simagis/file_contoh_template_jurnal_tesis/
+/simagis/file_diseminasi_sempro/
+/simagis/file_form_revisi_sempro/
+/simagis/file_form_revisi_tesis/
+/simagis/file_jurnal_tesis/
+/simagis/file_kwitansi_sempro/
+/simagis/file_kwitansi_ujian_tesis/
+/simagis/file_proposal/
+/simagis/file_publikasi_sempro/
+/simagis/file_revisi_proposal/
+/simagis/file_revisi_tesis/
+/simagis/file_tesis/
+/simagis/file_toefl_sempro/
+/simagis/file_transkrip_sempro/
+/simagis/file_transkrip_tesis/
+/simagis/file_turnitin_sempro/
+/simagis/file_turnitin_tesis/
+/simagis/photo_mhssw/
+/simagis/upload_berkas/
