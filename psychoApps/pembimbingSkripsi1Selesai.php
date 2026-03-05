@@ -1,60 +1,62 @@
-<?php include( "contentsConAdm.php" );
-  $username = $_SESSION['username'];
-  
-  $myquery = "SELECT * FROM dt_pegawai WHERE id='$username'";
-  $d = mysqli_query($con, $myquery)or die( mysqli_error($con));
-  $dtDosen = mysqli_fetch_assoc($d);
-  
-  $qNim = "SELECT nim FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]'";
-  $dNim = mysqli_query($con, $qNim)or die( mysqli_error($con));
-  $dtNim = mysqli_fetch_assoc($dNim);
+<?php include("contentsConAdm.php");
+$username = $_SESSION['username'];
 
-  $qJml = "SELECT COUNT(*) AS jumData FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]'";
-  $rJml =  mysqli_query($con, $qJml) or die(mysqli_error($con));
-  $dJml = mysqli_fetch_assoc($rJml) or die(mysqli_error($con));
-  $jData = $dJml['jumData'];
+$myquery = "SELECT * FROM dt_pegawai WHERE id='$username'";
+$d = mysqli_query($con, $myquery) or die(mysqli_error($con));
+$dtDosen = mysqli_fetch_assoc($d);
 
-  $qJmlProses = "SELECT COUNT(*) AS jumData FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]' AND nim IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]')";
-  $rJmlProses =  mysqli_query($con, $qJmlProses) or die(mysqli_error($con));
-  $dJmlProses = mysqli_fetch_assoc($rJmlProses) or die(mysqli_error($con));
-  $jDataProses = $dJmlProses['jumData'];
+$qNim = "SELECT nim FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]'";
+$dNim = mysqli_query($con, $qNim) or die(mysqli_error($con));
+$dtNim = mysqli_fetch_assoc($dNim);
+if (!$dtNim) $dtNim = ['nim' => ''];
 
-  $qJmlUjskrip = "SELECT COUNT(*) AS jumData FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]' AND nim NOT IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]')";
-  $rJmlUjskrip =  mysqli_query($con, $qJmlUjskrip) or die(mysqli_error($con));
-  $dJmlUjskrip = mysqli_fetch_assoc($rJmlUjskrip) or die(mysqli_error($con));
-  $jDataUjskrip = $dJmlUjskrip['jumData'];
-  ?>
+$qJml = "SELECT COUNT(*) AS jumData FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]'";
+$rJml =  mysqli_query($con, $qJml) or die(mysqli_error($con));
+$dJml = mysqli_fetch_assoc($rJml) or die(mysqli_error($con));
+$jData = $dJml['jumData'];
+
+$qJmlProses = "SELECT COUNT(*) AS jumData FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]' AND nim IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]')";
+$rJmlProses =  mysqli_query($con, $qJmlProses) or die(mysqli_error($con));
+$dJmlProses = mysqli_fetch_assoc($rJmlProses) or die(mysqli_error($con));
+$jDataProses = $dJmlProses['jumData'];
+
+$qJmlUjskrip = "SELECT COUNT(*) AS jumData FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]' AND nim NOT IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]')";
+$rJmlUjskrip =  mysqli_query($con, $qJmlUjskrip) or die(mysqli_error($con));
+$dJmlUjskrip = mysqli_fetch_assoc($rJmlUjskrip) or die(mysqli_error($con));
+$jDataUjskrip = $dJmlUjskrip['jumData'];
+?>
 <!DOCTYPE html>
 <html lang="en">
-  <?php include( "headAdm.php" );?> 
-  <body class="hold-transition sidebar-mini layout-fixed">
-    <div class="wrapper">
-      <?php 
-        include( "navtopAdm.php" );
-        include( "navSideBarDosen.php" );
-        ?> 
-      <div class="content-wrapper">
-        <div class="content-header">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-6">
-                <h4 class="mb-0">Rekap Pembimbingan</h4>
-              </div>
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                  <li class="breadcrumb-item active small">Pembimbing I Skripsi</li>
-                </ol>
-              </div>
+<?php include("headAdm.php"); ?>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+    <?php
+    include("navtopAdm.php");
+    include("navSideBarDosen.php");
+    ?>
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-6">
+              <h4 class="mb-0">Rekap Pembimbingan</h4>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item active small">Pembimbing I Skripsi</li>
+              </ol>
             </div>
           </div>
         </div>
-        <?php include 'pagination.php';
-          $tahun = date("Y");    
-          if(isset($_REQUEST['keyword']) && $_REQUEST['keyword']<>""){
-          $keyword=$_REQUEST['keyword'];
-          $reload = "pembimbingSkripsi1Selesai.php?pagination=true&keyword=$keyword";
-          
-          $sql = "SELECT pds.id
+      </div>
+      <?php include 'pagination.php';
+      $tahun = date("Y");
+      if (isset($_REQUEST['keyword']) && $_REQUEST['keyword'] <> "") {
+        $keyword = $_REQUEST['keyword'];
+        $reload = "pembimbingSkripsi1Selesai.php?pagination=true&keyword=$keyword";
+
+        $sql = "SELECT pds.id
           , pds.nim
           , pds.dospem_skripsi1
           , pds.dospem_skripsi2
@@ -70,175 +72,189 @@
           on pds.dospem_skripsi2 = dospem_skripsi2.id
           
           WHERE (pds.nim LIKE '%$keyword%' OR dm.nim LIKE '%$keyword%' OR ps.nim LIKE '%$keyword%' OR dm.nama LIKE '%$keyword%' OR dospem_skripsi1.nama LIKE '%$keyword%') AND (pds.dospem_skripsi1=$dtDosen[id]) AND (pds.nim NOT IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]')) ORDER BY dm.nama ASC";
-          
-          $result = mysqli_query($con, $sql);
-          }else{
-          $reload = "pembimbingSkripsi1Selesai.php?pagination=true";
-          $sql = "SELECT * FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]' AND nim NOT IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]') ORDER BY id DESC";
-          $result = mysqli_query($con, $sql);
-          }
-          
-          $rpp = 20;
-          $page = isset($_GET["page"]) ? (intval($_GET["page"])) : 1;
-          $tcount = mysqli_num_rows($result);
-          $tpages = ($tcount) ? ceil($tcount/$rpp) : 1;
-          $count = 0;
-          $i = ($page-1)*$rpp;
-          $no_urut = ($page-1)*$rpp;
-          ?>
-        <section class="content">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm mb-2">
-                <form method="post" action="pembimbingSkripsi1Selesai.php">
-                  <?php  error_reporting(E_ALL & ~E_NOTICE);?>
-                  <div class="input-group">
-                    <input type="search" name="keyword" class="form-control form-control-sm" placeholder="Kata kunci pencarian..." value="<?php echo $_REQUEST['keyword'];?>" required>
-                    <div class="input-group-append">
-                      <button type="submit" class="btn btn-sm btn-default">
-                      <i class="fa fa-search"></i>
-                      </button>
-                      <?php
-                        if($_REQUEST['keyword']<>""){
-                        ?>
-                      <a class="btn btn-sm btn-warning" title="Kembali" href="pembimbingSkripsi1Selesai.php"><i class="fas fa-sync"></i> Kembali</a>
-                      <?php
-                        }
-                        ?>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div class="row">
-              <section class="col-md-12 connectedSortable">
-                <div class="card card-outline card-success">
-                  <div class="card-header">
-                    <h4 class="card-title">Pembimbing I Skripsi</h4>
-                    <div class="card-tools">
-                      <ul class="nav nav-pills ml-auto">
-                        <li class="nav-item">
-                          <a class="nav-link" href="pembimbingSkripsi1.php">Semua (<?php echo $jData;?>)</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="pembimbingSkripsi1Proses.php">Proses (<?php echo $jDataProses;?>)</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link active" href="">Selesai (<?php echo $jDataUjskrip;?>)</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="card-body p-0">
-                    <div class="table-responsive">
-                      <table class="table table-hover table-bordered table-sm custom mb-0">
-                        <thead>
-                          <tr class="text-left bg-success">
-                            <td scope="col" width="4%" class="text-center pl-1">No.</td>
-                            <td scope="col" width="96%" class="text-center pr-1">Nama Mahasiswa</td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <?php
-                            while(($count<$rpp) && ($i<$tcount)) {
-                            mysqli_data_seek($result, $i);
-                            $data = mysqli_fetch_array($result);
-                            $id = $data['id'];
-                            
-                            $qpend =  "SELECT * FROM peserta_ujskrip WHERE nim='$data[nim]'";
-                            $rpend = mysqli_query($con, $qpend);
-                            $dpend = mysqli_fetch_array($rpend);
-                            
-                            $qjdwl =  "SELECT * FROM jadwal_ujskrip WHERE id_pendaftaran='$dpend[id]'";
-                            $rjdwl = mysqli_query($con, $qjdwl);
-                            $djdwl = mysqli_fetch_array($rjdwl);
-                            
-                            $qryperiod = "SELECT * from pendaftaran_skripsi WHERE id='$dpend[id_ujskrip]'";
-                            $res = mysqli_query($con,  $qryperiod )or die( mysqli_error($con) );
-                            $dperiod = mysqli_fetch_assoc( $res );
-                            $id_sempro=$dperiod['id'];
-                            $thp=$dperiod['tahap'];
-                            $ta=$dperiod['ta'];
-                            
-                            $qry_pemb1 = "SELECT * FROM dt_pegawai WHERE id='$dpend[pembimbing1]'";
-                            $res_pemb1 = mysqli_query($con, $qry_pemb1);
-                            $dt_pemb1 = mysqli_fetch_array($res_pemb1);
-                            
-                            $qry_pemb2 = "SELECT * FROM dt_pegawai WHERE id='$dpend[pembimbing2]'";
-                            $res_pemb2 = mysqli_query($con, $qry_pemb2);
-                            $dt_pemb2 = mysqli_fetch_array($res_pemb2);
-                            
-                            $qry_grade = "SELECT * FROM grade_ujskrip WHERE id_ujskrip='$dpend[id_ujskrip]'";
-                            $res_grade = mysqli_query($con, $qry_grade);
-                            $dt_grade = mysqli_fetch_array($res_grade);
-                            
-                            $sqlmhssw =  "SELECT * FROM dt_mhssw WHERE nim='$data[nim]'";
-                            $rmhssw = mysqli_query($con, $sqlmhssw);
-                            $dmhssw = mysqli_fetch_array($rmhssw);
-                            
-                            $qketua =  "SELECT * FROM dt_pegawai WHERE id='$djdwl[ketua_penguji]'";
-                            $rketua = mysqli_query($con, $qketua);
-                            $dketua = mysqli_fetch_array($rketua);                        
-                            
-                            $qsekretaris =  "SELECT * FROM dt_pegawai WHERE id='$djdwl[sekretaris_penguji]'";
-                            $rsekretaris = mysqli_query($con, $qsekretaris);
-                            $dsekretaris = mysqli_fetch_array($rsekretaris);
-                            
-                            $qutama =  "SELECT * FROM dt_pegawai WHERE id='$djdwl[penguji_utama]'";
-                            $rutama = mysqli_query($con, $qutama);
-                            $dutama = mysqli_fetch_array($rutama);
 
-                            $qruang = "SELECT * from dt_ruang WHERE id='$djdwl[ruang]'";
-                            $resp = mysqli_query($con,  $qruang )or die( mysqli_error($con) );
-                            $druang = mysqli_fetch_assoc( $resp );
-                            
-                            $tanggal=date("d-m-Y", strtotime($djdwl['tgl_ujian']));
-                            $day = date('D', strtotime($tanggal));
-                            $dayList = array(
-                              'Sun' => 'Minggu',
-                              'Mon' => 'Senin',
-                              'Tue' => 'Selasa',
-                              'Wed' => 'Rabu',
-                              'Thu' => 'Kamis',
-                              'Fri' => "Jum'at",
-                              'Sat' => 'Sabtu'
-                            );
-                            include_once("month_function.php");
-                            
-                            $qnilai =  "SELECT * FROM nilai_ujskrip WHERE id_pendaftaran='$dpend[id]'";
-                            $rnilai = mysqli_query($con, $qnilai);
-                            $dnilai = mysqli_fetch_array($rnilai);
-                            
-                            if($dnilai['nilai_ketua']=='0' && $dnilai['nilai_sekretaris']!='0' && $dnilai['nilai_utama']!='0') {
-                            $nilaiakhir = ($dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 2;}
-                            elseif($dnilai['nilai_ketua']=='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']!='0') {
-                            $nilaiakhir = ($dnilai['nilai_utama']) / 1;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua']) / 1;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']!='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris']) / 2;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']!='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_utama']) / 2;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']!='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris']) / 2;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua']) / 1;}
-                            elseif($dnilai['nilai_ketua']=='0' && $dnilai['nilai_sekretaris']!='0' && $dnilai['nilai_utama']!='0') {
-                            $nilaiakhir = ($dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 2;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']!='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_utama']) / 2;}
-                            elseif($dnilai['nilai_ketua']=='0' && $dnilai['nilai_sekretaris']!='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_sekretaris']) / 1;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua']) / 1;}
-                            elseif($dnilai['nilai_ketua']=='0' && $dnilai['nilai_sekretaris']=='0' && $dnilai['nilai_utama']=='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 3;}
-                            elseif($dnilai['nilai_ketua']!='0' && $dnilai['nilai_sekretaris']!='0' && $dnilai['nilai_utama']!='0') {
-                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 3;}
-                            ?>
+        $result = mysqli_query($con, $sql);
+      } else {
+        $reload = "pembimbingSkripsi1Selesai.php?pagination=true";
+        $sql = "SELECT * FROM pengelompokan_dospem_skripsi WHERE dospem_skripsi1='$dtDosen[id]' AND nim NOT IN(SELECT nim FROM peserta_ujskrip WHERE nim='$dtNim[nim]') ORDER BY id DESC";
+        $result = mysqli_query($con, $sql);
+      }
+
+      $rpp = 20;
+      $page = isset($_GET["page"]) ? (intval($_GET["page"])) : 1;
+      $tcount = mysqli_num_rows($result);
+      $tpages = ($tcount) ? ceil($tcount / $rpp) : 1;
+      $count = 0;
+      $i = ($page - 1) * $rpp;
+      $no_urut = ($page - 1) * $rpp;
+      ?>
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm mb-2">
+              <form method="post" action="pembimbingSkripsi1Selesai.php">
+                <?php error_reporting(E_ALL & ~E_NOTICE); ?>
+                <div class="input-group">
+                  <input type="search" name="keyword" class="form-control form-control-sm" placeholder="Kata kunci pencarian..." value="<?php echo $_REQUEST['keyword'] ?? ''; ?>" required>
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-sm btn-default">
+                      <i class="fa fa-search"></i>
+                    </button>
+                    <?php
+                    if (isset($_REQUEST['keyword']) && $_REQUEST['keyword'] <> "") {
+                    ?>
+                      <a class="btn btn-sm btn-warning" title="Kembali" href="pembimbingSkripsi1Selesai.php"><i class="fas fa-sync"></i> Kembali</a>
+                    <?php
+                    }
+                    ?>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="row">
+            <section class="col-md-12 connectedSortable">
+              <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h4 class="card-title">Pembimbing I Skripsi</h4>
+                  <div class="card-tools">
+                    <ul class="nav nav-pills ml-auto">
+                      <li class="nav-item">
+                        <a class="nav-link" href="pembimbingSkripsi1.php">Semua (<?php echo $jData; ?>)</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="pembimbingSkripsi1Proses.php">Proses (<?php echo $jDataProses; ?>)</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link active" href="">Selesai (<?php echo $jDataUjskrip; ?>)</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-sm custom mb-0">
+                      <thead>
+                        <tr class="text-left bg-success">
+                          <td scope="col" width="4%" class="text-center pl-1">No.</td>
+                          <td scope="col" width="96%" class="text-center pr-1">Nama Mahasiswa</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                        while (($count < $rpp) && ($i < $tcount)) {
+                          mysqli_data_seek($result, $i);
+                          $data = mysqli_fetch_array($result);
+                          $id = $data['id'];
+
+                          $qpend =  "SELECT * FROM peserta_ujskrip WHERE nim='$data[nim]'";
+                          $rpend = mysqli_query($con, $qpend);
+                          $dpend = mysqli_fetch_array($rpend);
+                          if (!$dpend) $dpend = [];
+                          $id_pend_check = $dpend['id'] ?? '';
+
+                          $qjdwl =  "SELECT * FROM jadwal_ujskrip WHERE id_pendaftaran='$id_pend_check'";
+                          $rjdwl = mysqli_query($con, $qjdwl);
+                          $djdwl = mysqli_fetch_array($rjdwl);
+                          if (!$djdwl) $djdwl = [];
+
+                          $id_ujsk_check = $dpend['id_ujskrip'] ?? '';
+                          $qryperiod = "SELECT * from pendaftaran_skripsi WHERE id='$id_ujsk_check'";
+                          $res = mysqli_query($con,  $qryperiod) or die(mysqli_error($con));
+                          $dperiod = mysqli_fetch_assoc($res);
+                          if (!$dperiod) $dperiod = [];
+                          $id_sempro = $dperiod['id'] ?? '';
+                          $thp = $dperiod['tahap'] ?? '';
+                          $ta = $dperiod['ta'] ?? '';
+
+                          $qry_pemb1 = "SELECT * FROM dt_pegawai WHERE id='" . ($dpend['pembimbing1'] ?? '') . "'";
+                          $res_pemb1 = mysqli_query($con, $qry_pemb1);
+                          $dt_pemb1 = mysqli_fetch_array($res_pemb1);
+                          if (!$dt_pemb1) $dt_pemb1 = [];
+
+                          $qry_pemb2 = "SELECT * FROM dt_pegawai WHERE id='" . ($dpend['pembimbing2'] ?? '') . "'";
+                          $res_pemb2 = mysqli_query($con, $qry_pemb2);
+                          $dt_pemb2 = mysqli_fetch_array($res_pemb2);
+                          if (!$dt_pemb2) $dt_pemb2 = [];
+
+                          $qry_grade = "SELECT * FROM grade_ujskrip WHERE id_ujskrip='" . ($dpend['id_ujskrip'] ?? '') . "'";
+                          $res_grade = mysqli_query($con, $qry_grade);
+                          $dt_grade = mysqli_fetch_array($res_grade);
+                          if (!$dt_grade) $dt_grade = [];
+
+                          $sqlmhssw =  "SELECT * FROM dt_mhssw WHERE nim='$data[nim]'";
+                          $rmhssw = mysqli_query($con, $sqlmhssw);
+                          $dmhssw = mysqli_fetch_array($rmhssw);
+
+                          $qketua =  "SELECT * FROM dt_pegawai WHERE id='" . ($djdwl['ketua_penguji'] ?? '') . "'";
+                          $rketua = mysqli_query($con, $qketua);
+                          $dketua = mysqli_fetch_array($rketua);
+                          if (!$dketua) $dketua = [];
+
+                          $qsekretaris =  "SELECT * FROM dt_pegawai WHERE id='" . ($djdwl['sekretaris_penguji'] ?? '') . "'";
+                          $rsekretaris = mysqli_query($con, $qsekretaris);
+                          $dsekretaris = mysqli_fetch_array($rsekretaris);
+                          if (!$dsekretaris) $dsekretaris = [];
+
+                          $qutama =  "SELECT * FROM dt_pegawai WHERE id='" . ($djdwl['penguji_utama'] ?? '') . "'";
+                          $rutama = mysqli_query($con, $qutama);
+                          $dutama = mysqli_fetch_array($rutama);
+                          if (!$dutama) $dutama = [];
+
+                          $qruang = "SELECT * from dt_ruang WHERE id='" . ($djdwl['ruang'] ?? '') . "'";
+                          $resp = mysqli_query($con,  $qruang) or die(mysqli_error($con));
+                          $druang = mysqli_fetch_assoc($resp);
+                          if (!$druang) $druang = [];
+
+                          $tanggal = date("d-m-Y", strtotime($djdwl['tgl_ujian'] ?? ''));
+                          $day = date('D', strtotime($tanggal));
+                          $dayList = array(
+                            'Sun' => 'Minggu',
+                            'Mon' => 'Senin',
+                            'Tue' => 'Selasa',
+                            'Wed' => 'Rabu',
+                            'Thu' => 'Kamis',
+                            'Fri' => "Jum'at",
+                            'Sat' => 'Sabtu'
+                          );
+                          include_once("month_function.php");
+
+                          $qnilai =  "SELECT * FROM nilai_ujskrip WHERE id_pendaftaran='" . ($dpend['id'] ?? '') . "'";
+                          $rnilai = mysqli_query($con, $qnilai);
+                          $dnilai = mysqli_fetch_array($rnilai);
+                          if (!$dnilai) $dnilai = ['nilai_ketua' => '0', 'nilai_sekretaris' => '0', 'nilai_utama' => '0'];
+
+                          if ($dnilai['nilai_ketua'] == '0' && $dnilai['nilai_sekretaris'] != '0' && $dnilai['nilai_utama'] != '0') {
+                            $nilaiakhir = ($dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 2;
+                          } elseif ($dnilai['nilai_ketua'] == '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] != '0') {
+                            $nilaiakhir = ($dnilai['nilai_utama']) / 1;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua']) / 1;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] != '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris']) / 2;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] != '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_utama']) / 2;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] != '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris']) / 2;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua']) / 1;
+                          } elseif ($dnilai['nilai_ketua'] == '0' && $dnilai['nilai_sekretaris'] != '0' && $dnilai['nilai_utama'] != '0') {
+                            $nilaiakhir = ($dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 2;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] != '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_utama']) / 2;
+                          } elseif ($dnilai['nilai_ketua'] == '0' && $dnilai['nilai_sekretaris'] != '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_sekretaris']) / 1;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua']) / 1;
+                          } elseif ($dnilai['nilai_ketua'] == '0' && $dnilai['nilai_sekretaris'] == '0' && $dnilai['nilai_utama'] == '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 3;
+                          } elseif ($dnilai['nilai_ketua'] != '0' && $dnilai['nilai_sekretaris'] != '0' && $dnilai['nilai_utama'] != '0') {
+                            $nilaiakhir = ($dnilai['nilai_ketua'] + $dnilai['nilai_sekretaris'] + $dnilai['nilai_utama']) / 3;
+                          }
+                        ?>
                           <tr data-widget="expandable-table" aria-expanded="false">
-                            <td class="text-center pl-1"><?php echo ++$no_urut;?></td>
-                            <td class="text-left pr-1"><?php echo  $dmhssw['nama'].' ['.$dmhssw['nim'].']';?></td>
+                            <td class="text-center pl-1"><?php echo ++$no_urut; ?></td>
+                            <td class="text-left pr-1"><?php echo  $dmhssw['nama'] . ' [' . $dmhssw['nim'] . ']'; ?></td>
                           </tr>
                           <tr class="expandable-body">
                             <td colspan="2">
@@ -249,52 +265,56 @@
                                       <tr>
                                         <th width="22%" class="pl-1">Nama Lengkap</th>
                                         <td width="4%">:</td>
-                                        <td width="74%"><?php echo $dmhssw['nama'].' ['.$dmhssw['nim'].']';?></td>
+                                        <td width="74%"><?php echo $dmhssw['nama'] . ' [' . $dmhssw['nim'] . ']'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Judul Skripsi</th>
                                         <td>:</td>
-                                        <td><?php echo $dpend['judul_skripsi']=preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', $dpend['judul_skripsi']);?></td>
+                                        <td><?php echo $dpend['judul_skripsi'] = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', $dpend['judul_skripsi']); ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Pembimbing 1</th>
                                         <td>:</td>
-                                        <td><?php echo $dt_pemb1['nama'];?></td>
+                                        <td><?php echo $dt_pemb1['nama'] ?? '-'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Pembimbing 2</th>
                                         <td>:</td>
-                                        <td><?php echo $dt_pemb2['nama'];?></td>
+                                        <td><?php echo $dt_pemb2['nama'] ?? '-'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Hari, Tanggal dan Pukul Ujian</th>
                                         <td>:</td>
-                                        <td><?php if(empty($djdwl['tgl_ujian']) && empty($djdwl['jam_mulai']) && empty($djdwl['jam_selesai']) && empty($djdwl['ruang'])) { echo "Belum terjadwal";} else { echo $dayList[$day].', '.bulanIndo($djdwl['tgl_ujian']).', '.$djdwl['jam_mulai'].' - '.$djdwl['jam_selesai'].' WIB.';}?></td>
+                                        <td><?php if (empty($djdwl['tgl_ujian']) && empty($djdwl['jam_mulai']) && empty($djdwl['jam_selesai']) && empty($djdwl['ruang'])) {
+                                              echo "Belum terjadwal";
+                                            } else {
+                                              echo $dayList[$day] . ', ' . bulanIndo($djdwl['tgl_ujian']) . ', ' . $djdwl['jam_mulai'] . ' - ' . $djdwl['jam_selesai'] . ' WIB.';
+                                            } ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Sekretaris Penguji</th>
                                         <td>:</td>
-                                        <td><?php echo $dsekretaris['nama'];?></td>
+                                        <td><?php echo $dsekretaris['nama'] ?? '-'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Ketua Penguji</th>
                                         <td>:</td>
-                                        <td><?php echo $dketua['nama'];?></td>
+                                        <td><?php echo $dketua['nama'] ?? '-'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Penguji Utama</th>
                                         <td>:</td>
-                                        <td><?php echo $dutama['nama'];?></td>
+                                        <td><?php echo $dutama['nama'] ?? '-'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Ruang Ujian</th>
                                         <td>:</td>
-                                        <td><?php echo $druang['nm'];?></td>
+                                        <td><?php echo $druang['nm'] ?? '-'; ?></td>
                                       </tr>
                                       <tr>
                                         <th class="pl-1">Nilai Ujian</th>
                                         <td>:</td>
-                                        <td><?php include ("meanNilaiUjskrip.php");?></td>
+                                        <td><?php include("meanNilaiUjskrip.php"); ?></td>
                                       </tr>
                                     </tbody>
                                   </table>
@@ -302,24 +322,25 @@
                               </div>
                             </td>
                           </tr>
-                          <?php
-                            $i++; 
-                            $count++;
-                            }
-                            ?>
-                        </tbody>
-                      </table>
-                    </div>
+                        <?php
+                          $i++;
+                          $count++;
+                        }
+                        ?>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <div class="float-right"><?php echo paginate_one($reload, $page, $tpages);?></div>
-              </section>
-            </div>
+              </div>
+              <div class="float-right"><?php echo paginate_one($reload, $page, $tpages); ?></div>
+            </section>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
-    <?php include( "footerAdm.php" );?>
-    <?php include( "jsAdm.php" );?>
-  </body>
+  </div>
+  <?php include("footerAdm.php"); ?>
+  <?php include("jsAdm.php"); ?>
+</body>
+
 </html>
